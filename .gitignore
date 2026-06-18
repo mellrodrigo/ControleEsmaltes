@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Banco de dados e uploads (gerados em runtime)
+data/esmaltes.db
+data/esmaltes.db-journal
+data/uploads/*
+!data/uploads/.gitkeep
+
+# Sistema
+.DS_Store
+*.log

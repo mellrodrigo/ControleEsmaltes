@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#c2185b" />
+  <title>Controle de Esmaltes</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>💅 Controle de Esmaltes</h1>
+  </header>
+
+  <section id="stats" class="stats"></section>
+
+  <main>
+    <!-- ABA: CADASTRAR -->
+    <section id="tab-cadastrar" class="tab">
+      <form id="form-cadastro" class="card">
+        <div class="meta-cadastro">
+          <span>Etiqueta nº <strong id="proxima-etiqueta">—</strong></span>
+          <span>Cadastro: <strong id="data-hoje">—</strong></span>
+        </div>
+
+        <label>Fotos do esmalte
+          <input type="file" id="fotos" accept="image/*" capture="environment" multiple />
+        </label>
+        <div id="preview-fotos" class="preview"></div>
+
+        <label>Marca
+          <input list="lista-marcas" id="marca" autocomplete="off" placeholder="Ex.: Impala" />
+        </label>
+        <label>Série
+          <input list="lista-series" id="serie" autocomplete="off" placeholder="Ex.: cremoso" />
+        </label>
+        <label>Cor
+          <input list="lista-cores" id="cor" autocomplete="off" placeholder="Ex.: vermelho" />
+        </label>
+        <label>Validade
+          <input type="month" id="validade" />
+        </label>
+
+        <datalist id="lista-marcas"></datalist>
+        <datalist id="lista-series"></datalist>
+        <datalist id="lista-cores"></datalist>
+
+        <button type="submit" class="btn-primary">Cadastrar esmalte</button>
+        <p id="msg-cadastro" class="msg"></p>
+      </form>
+    </section>
+
+    <!-- ABA: LISTA -->
+    <section id="tab-lista" class="tab hidden">
+      <div class="busca">
+        <input type="search" id="busca" placeholder="Buscar por marca, cor, série ou nº..." />
+      </div>
+      <div class="chips" id="chips"></div>
+      <div id="lista" class="lista"></div>
+      <button id="carregar-mais" class="btn-secundario hidden">Carregar mais</button>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <button data-tab="cadastrar" class="active">➕<span>Cadastrar</span></button>
+    <button data-tab="lista">📋<span>Lista</span></button>
+  </nav>
+
+  <!-- Modal de detalhes/edição -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-conteudo card">
+      <button class="fechar" id="fechar-modal">✕</button>
+      <div id="modal-corpo"></div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
