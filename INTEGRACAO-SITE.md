@@ -1,55 +1,46 @@
 # Integração com o site (NGHair-landigpage)
 
-Objetivo: adicionar no menu **"Empresas"** do site um link **"Administração"**
-que abre o app de Controle de Esmaltes.
+Objetivo: o item **"Administração"** do menu **"Empresas"** do site deve abrir
+o app de Controle de Esmaltes.
 
 > Esta sessão tem acesso só ao repositório `ControleEsmaltes`. A edição do
 > menu deve ser feita na **outra sessão**, apontando para o repositório
 > `mellrodrigo/NGHair-landigpage`. Use as instruções abaixo lá.
 
-## 1. Endereço do app
+## Endereço do app
 
-O app roda no seu servidor (deploy automático a partir deste repositório).
-Defina o endereço público dele — recomendado um **subdomínio**, por exemplo:
+O app roda no subdomínio (veja `DEPLOY-VPS.md` para publicá-lo):
 
 ```
-https://esmaltes.SEU-DOMINIO.com.br
+https://esmaltes.nghair.com.br
 ```
 
-(Use subdomínio em vez de subpasta para não precisar reescrever os caminhos
-dos arquivos estáticos do app.)
+> ⚠️ O link **não** pode apontar para um caminho dentro do site estático
+> (ex.: `https://www.nghair.com.br/controleEsmaltes`) — isso dá **404**, pois
+> a landing page não tem essa rota e o app Python roda em outro endereço.
 
-## 2. Trecho do link para o menu "Empresas"
+## Correção do link (o que está errado hoje)
 
-Adicione este item dentro da lista do menu **Empresas** do site:
+Hoje o item "Administração" aponta para um subcaminho do site, que dá 404.
+Troque o `href` (no menu **desktop e no mobile**):
 
-```html
-<a href="https://esmaltes.SEU-DOMINIO.com.br" target="_blank" rel="noopener">
-  Administração
-</a>
+```diff
+- href="https://www.nghair.com.br/controleEsmaltes"
++ href="https://esmaltes.nghair.com.br"
 ```
 
-Se o menu usa `<li>` (padrão de navbar):
-
-```html
-<li class="nav-item">
-  <a class="nav-link" href="https://esmaltes.SEU-DOMINIO.com.br"
-     target="_blank" rel="noopener">Administração</a>
-</li>
-```
-
-Troque `https://esmaltes.SEU-DOMINIO.com.br` pelo endereço real do app.
-
-## 3. Prompt para a outra sessão
+## Prompt para a outra sessão (repositório do site)
 
 Cole isto na sessão do Claude Code aberta no repositório `NGHair-landigpage`:
 
-> No menu "Empresas" do site, adicione um novo item de link chamado
-> "Administração" que aponta para `https://esmaltes.SEU-DOMINIO.com.br`
-> (abrir em nova aba). Mantenha o mesmo estilo/classes dos outros itens do
-> menu. Faça o commit e o push.
+> No menu "Empresas" do site existe um item "Administração" cujo link aponta
+> para `https://www.nghair.com.br/controleEsmaltes` e está dando erro 404.
+> Corrija o `href` desse item para `https://esmaltes.nghair.com.br`, mantendo
+> `target="_blank"` e `rel="noopener noreferrer"`. O link aparece tanto no
+> menu desktop quanto no mobile — ajuste nos dois lugares. Não altere mais
+> nada. Mostre o diff, faça commit e push e abra um Pull Request em rascunho.
 
-## 4. Proteção do painel (recomendado)
+## Proteção do painel (recomendado)
 
 O painel "Administração" fica acessível pela internet. Para exigir senha,
 defina no servidor as variáveis de ambiente:
