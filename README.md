@@ -50,6 +50,24 @@ Acesse **http://localhost:8000** no navegador. Para usar no celular pela
 mesma rede Wi-Fi, acesse `http://IP-DO-COMPUTADOR:8000` e use a opção
 **"Adicionar à tela inicial"** do navegador para instalar o app.
 
+## Deploy (servidor próprio / auto-deploy)
+
+O deploy é automático a cada commit neste repositório. Pontos de atenção:
+
+- **Entrada:** `Procfile` e `Dockerfile` já incluídos. O comando de execução é
+  `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+- **Dados persistentes:** o banco (`data/esmaltes.db`) e as fotos
+  (`data/uploads/`) ficam na pasta `data/`. Monte um **volume/disco
+  persistente** em `/app/data` (Docker) ou na pasta `data/` para não perder os
+  registros e fotos a cada deploy.
+- **Primeira execução:** se o banco estiver vazio, a planilha de `seed/` é
+  importada automaticamente (1.471 esmaltes).
+- **Senha (opcional):** defina `ADMIN_USER` e `ADMIN_PASS` no servidor para
+  proteger o painel com login (HTTP Basic). Sem elas, o painel fica aberto.
+
+Integração com o site (link "Administração" no menu "Empresas"): veja
+[`INTEGRACAO-SITE.md`](INTEGRACAO-SITE.md).
+
 ## Estrutura
 
 ```

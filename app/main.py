@@ -1,13 +1,16 @@
 """API e servidor do Controle de Esmaltes (PWA)."""
 from __future__ import annotations
 
+import base64
 import datetime as dt
 import io
+import os
+import secrets
 import uuid
 from typing import Optional
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, ImageOps
 
@@ -18,10 +21,48 @@ app = FastAPI(title="Controle de Esmaltes")
 STATIC_DIR = db.BASE_DIR / "static"
 MAX_LADO = 1280  # px – maior dimensão das fotos salvas
 
+# Proteção opcional por senha (HTTP Basic). Fica DESLIGADA enquanto as
+# variáveis de ambiente não forem definidas — assim o deploy/local não trava.
+# Para exigir login, defina ADMIN_USER e ADMIN_PASS no servidor.
+ADMIN_USER = os.environ.get("ADMIN_USER", "")
+ADMIN_PASS = os.environ.get("ADMIN_PASS", "")
+
+
+@app.middleware("http")
+async def _auth_basica(request, call_next):
+    if ADMIN_USER and ADMIN_PASS:
+        header = request.headers.get("authorization", "")
+        autorizado = False
+        if header.startswith("Basic "):
+            try:
+                usuario, _, senha = base64.b64decode(header[6:]).decode().partition(":")
+                autorizado = (secrets.compare_digest(usuario, ADMIN_USER)
+                              and secrets.compare_digest(senha, ADMIN_PASS))
+            except Exception:
+                autorizado = False
+        if not autorizado:
+            return Response(
+                "Acesso restrito", status_code=401,
+                headers={"WWW-Authenticate": 'Basic realm="Controle de Esmaltes"'},
+            )
+    return await call_next(request)
+
 
 @app.on_event("startup")
 def _startup() -> None:
     db.init_db()
+    # Importa a planilha automaticamente na primeira execução (banco vazio).
+    conn = db.get_conn()
+    try:
+        vazio = conn.execute("SELECT COUNT(*) AS c FROM esmaltes").fetchone()["c"] == 0
+    finally:
+        conn.close()
+    if vazio:
+        try:
+            from app.importer import importar
+            importar()
+        except Exception:
+            pass  # segue mesmo sem a planilha de seed
 
 
 # ---------------------------------------------------------------------------
